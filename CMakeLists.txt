@@ -19,5 +19,3 @@ add_executable (environment src/environment.cpp src/render/render.cpp src/proces
 target_link_libraries (environment ${PCL_LIBRARIES})
 
 
-
-

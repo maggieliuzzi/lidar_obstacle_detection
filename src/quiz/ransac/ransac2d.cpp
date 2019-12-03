@@ -68,7 +68,7 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int ma
 	
 	// TODO: Fill in this function
 
-	// For max iterations 
+	// For max iterations
 
 	// Randomly sample subset and fit line
 
@@ -76,6 +76,29 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int ma
 	// If distance is smaller than threshold count it as inlier
 
 	// Return indicies of inliers from fitted line with most inliers
+
+	while(maxIterations--) // > 0
+	{
+		std::unordered_set<int> inliers; // hash set - order doesn't matter, we're just hashing into the index // in sets, elements have to be unique, else it won't insert them
+		while(inliers.size() < 2)
+			inliers.insert(rand()%(cloud->points.size())); // using modulo, value between 0 and the size of cloud // inliers will hold the index of points
+
+		float x1, y1, x2, y2;
+
+		auto itr = inliers.begin();
+
+	}
+
+
+
+	/*
+	for (int i = 0; i < maxIterations; i++)
+	{
+		std::cout << cloud->points[rand()%100] << std::endl;
+
+	}
+	*/
+	
 	
 	return inliersResult;
 
@@ -92,7 +115,7 @@ int main ()
 	
 
 	// TODO: Change the max iteration and distance tolerance arguments for Ransac function
-	std::unordered_set<int> inliers = Ransac(cloud, 0, 0);
+	std::unordered_set<int> inliers = Ransac(cloud, 50, 0.5);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr  cloudInliers(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloudOutliers(new pcl::PointCloud<pcl::PointXYZ>());
@@ -106,7 +129,7 @@ int main ()
 			cloudOutliers->points.push_back(point);
 	}
 
-
+	/*
 	// Render 2D point cloud with inliers and outliers
 	if(inliers.size())
 	{
@@ -122,5 +145,5 @@ int main ()
   	{
   	  viewer->spinOnce ();
   	}
-  	
+	*/
 }

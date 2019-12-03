@@ -42,13 +42,25 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // ----------------------------------------------------
     
     // RENDER OPTIONS
-    bool renderScene = true;
+    bool renderScene = false;
     std::vector<Car> cars = initHighway(renderScene, viewer);
     
     // TODO:: Create lidar sensor 
+    // Lidar lidarSensor = Lidar(cars, 0);  // on stack - less space but faster lookups
+    Lidar* lidarSensor = new Lidar(cars, 0);  // on heap
 
-    // TODO:: Create point processor
-  
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud = lidarSensor->scan();
+
+    // renderRays(viewer, lidarSensor->position, pointCloud);
+
+    // renderPointCloud(viewer, pointCloud, "pointCloudName");
+
+    ProcessPointClouds<pcl::PointXYZ> pointCloudProcessor;  // Instantiating on the stack
+    // ProcessPointClouds<pcl::PointXYZ>* pointCloudProcessor = new ProcessPointClouds<pcl::PointXYZ>();  // On the heap
+
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointCloudProcessor.SegmentPlane(pointCloud, 1000, 0.2);  // . because instantiated on the stack. -> if on the heap  // TODO: go back to 100 iterations
+    renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0));
+    renderPointCloud(viewer, segmentCloud.second, "groundCloud", Color(0,1,0));
 }
 
 
