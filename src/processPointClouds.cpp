@@ -267,8 +267,8 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::P
 
 
 
-/*
-void proximity(int index, const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTolerance)
+template<typename PointT>
+void proximity(int index, typename pcl::PointCloud<PointT>::Ptr pointCloud, typename pcl::PointCloud<PointT>::Ptr& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTolerance)
 {
 	// euclideanClusterHelper
 
@@ -284,12 +284,13 @@ void proximity(int index, const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, 
         position++;
     }
 }
-*/
-/*
-std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, KdTree* tree, float distanceTol)
+
+
+template<typename PointT>
+std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanCluster(typename pcl::PointCloud<PointT>::Ptr pointCloud, KdTree* tree, float distanceTol)
 {
 	// TODO: Fill out this function to return list of indices for each cluster
-	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;  // vector of point clouds
+	std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // vector of point clouds
 
 	std::vector<bool> processed(pointCloud->points.size(), false);  // same size as points, each of which starts as false
 
@@ -301,7 +302,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::Poi
 			i++;
 			continue;
 		}
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cluster;  // type: point cloud
+		typename pcl::PointCloud<PointT>::Ptr cluster;  // type: point cloud
 		//proximity(i, pointCloud, cluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference[]
 		clusters.push_back(cluster);
 		i++;
@@ -309,7 +310,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::Poi
 
 	return clusters;  // vector of point clouds
 }
-*/
+
 
 template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance)
@@ -374,7 +375,6 @@ void ProcessPointClouds<PointT>::savePcd(typename pcl::PointCloud<PointT>::Ptr c
 template<typename PointT>
 typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::loadPcd(std::string file)
 {
-
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
 
     if (pcl::io::loadPCDFile<PointT> (file, *cloud) == -1) //* load the file
@@ -390,12 +390,10 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::loadPcd(std::s
 template<typename PointT>
 std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::string dataPath)
 {
-
     std::vector<boost::filesystem::path> paths(boost::filesystem::directory_iterator{dataPath}, boost::filesystem::directory_iterator{});
 
     // sort files in accending order so playback is chronological
     sort(paths.begin(), paths.end());
 
     return paths;
-
 }
