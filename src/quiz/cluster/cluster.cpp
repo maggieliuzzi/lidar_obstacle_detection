@@ -143,7 +143,7 @@ int main ()
 	
   	while (!viewer->wasStopped ())
   	{
-  	  viewer->spinOnce ();
+  	  viewer->spinOnce();
   	}
   	
 }

@@ -45,22 +45,40 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     bool renderScene = false;
     std::vector<Car> cars = initHighway(renderScene, viewer);
     
-    // TODO:: Create lidar sensor 
-    // Lidar lidarSensor = Lidar(cars, 0);  // on stack - less space but faster lookups
-    Lidar* lidarSensor = new Lidar(cars, 0);  // on heap
+    // TODO:: Create LiDAR sensor 
+    Lidar* lidarSensor = new Lidar(cars, 0);  // on heap. On stack (less space but faster lookups): Lidar lidarSensor = Lidar(cars, 0);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud = lidarSensor->scan();
 
+    // Displaying rays coming out from the LiDAR sensor
     // renderRays(viewer, lidarSensor->position, pointCloud);
 
+    // Displaying full point cloud
     // renderPointCloud(viewer, pointCloud, "pointCloudName");
 
-    ProcessPointClouds<pcl::PointXYZ> pointCloudProcessor;  // Instantiating on the stack
-    // ProcessPointClouds<pcl::PointXYZ>* pointCloudProcessor = new ProcessPointClouds<pcl::PointXYZ>();  // On the heap
+    ProcessPointClouds<pcl::PointXYZ> pointCloudProcessor;  // Instantiating on the stack. On the heap: ProcessPointClouds<pcl::PointXYZ>* pointCloudProcessor = new ProcessPointClouds<pcl::PointXYZ>();
 
-    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointCloudProcessor.SegmentPlane(pointCloud, 1000, 0.2);  // . because instantiated on the stack. -> if on the heap  // TODO: go back to 100 iterations
-    renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0));
-    renderPointCloud(viewer, segmentCloud.second, "groundCloud", Color(0,1,0));
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointCloudProcessor.SegmentPlane(pointCloud, 50, 0.3);  // 1000, 0.2  // . because instantiated on the stack. -> if on the heap  // TODO: go back to 100 iterations  // try: 50, 0.3
+    // Displaying segmented obstacles and ground points
+    // renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(0.8, 0.8, 0.8));
+    renderPointCloud(viewer, segmentCloud.second, "groundCloud");  // Color(0.3, 0.3, 0.3)
+
+
+    // Adding clustering
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = pointCloudProcessor.Clustering(segmentCloud.first, 1.5, 3, 30);  // first: obstacles
+
+    int clusterId = 0;
+    std::vector<Color> colours = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)};
+
+    for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster : cloudClusters)  // iterating through vector of point clouds
+    {
+        std::cout << "cluster size ";
+        pointCloudProcessor.numPoints(cluster);
+
+        renderPointCloud(viewer, cluster, "obstCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]); // prev: clusterId
+
+        ++clusterId;
+    }
 }
 
 
@@ -68,7 +86,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
 
-    viewer->setBackgroundColor (0, 0, 0);
+    viewer->setBackgroundColor(0, 0, 0);
     
     // set camera position and angle
     viewer->initCameraParameters();
