@@ -42,7 +42,6 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/local/include/pcl-1.9"
   "/usr/local/include/eigen3"
   "/usr/local/Cellar/flann/1.9.1_7/include"
-  "/usr/local/Cellar/glew/2.1.0/include"
   "/usr/local/opt/qt/lib/QtWidgets.framework"
   "/usr/local/opt/qt/lib/QtWidgets.framework/Headers"
   "/usr/local/opt/qt/lib/QtGui.framework"
