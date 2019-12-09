@@ -284,7 +284,8 @@ void proximity(int index, const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, 
         position++;
     }
 }
-
+*/
+/*
 std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, KdTree* tree, float distanceTol)
 {
 	// TODO: Fill out this function to return list of indices for each cluster
@@ -301,14 +302,14 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::Poi
 			continue;
 		}
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cluster;  // type: point cloud
-		proximity(i, pointCloud, cluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference[]
+		//proximity(i, pointCloud, cluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference[]
 		clusters.push_back(cluster);
 		i++;
 	}
 
 	return clusters;  // vector of point clouds
 }
-
+*/
 
 template<typename PointT>
 std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance)
@@ -328,7 +329,8 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::Clu
     for (int i = 0; i < cloud->points.size(); i++) 
     	tree3D->insertPointXYZ(cloud->points[i], i); 
  
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = euclideanCluster(cloud, tree3D, 3.0);
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    //std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = euclideanCluster(cloud, tree3D, 3.0);
 	std::cout << "clusters.size(): " << clusters.size() << std::endl;
 
 
@@ -339,7 +341,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::Clu
 
     return clusters;
 }
-*/
+
 
 
 template<typename PointT>
