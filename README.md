@@ -1,4 +1,4 @@
-# Sensor Fusion Self-Driving Car Course
+# Udacity's Sensor Fusion Self-Driving Car Course
 
 <img src="media/ObstacleDetectionFPS.gif" width="700" height="400" />
 
