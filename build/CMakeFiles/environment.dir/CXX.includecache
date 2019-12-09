@@ -23,8 +23,6 @@ processPointClouds.h
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/processPointClouds.h
 unordered_set
 -
-cluster/kdtree.h
-/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/cluster/kdtree.h
 
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/processPointClouds.h
 pcl/io/pcd_io.h
@@ -57,6 +55,8 @@ chrono
 -
 render/box.h
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/render/box.h
+cluster/kdtree.h
+/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/cluster/kdtree.h
 
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/render/box.h
 Eigen/Geometry
