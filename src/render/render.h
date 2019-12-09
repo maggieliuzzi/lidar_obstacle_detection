@@ -12,7 +12,6 @@
 
 struct Color
 {
-
 	float r, g, b;
 
 	Color(float setR, float setG, float setB)
@@ -22,7 +21,6 @@ struct Color
 
 struct Vect3
 {
-
 	double x, y, z;
 
 	Vect3(double setX, double setY, double setZ)
@@ -43,7 +41,6 @@ enum CameraAngle
 
 struct Car
 {
-
 	// units in meters
   	Vect3 position, dimensions;
   	
