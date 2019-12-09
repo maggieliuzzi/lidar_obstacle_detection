@@ -312,7 +312,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> euclideanCluster(const pcl::Poi
 */
 
 template<typename PointT>
-std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance)
+std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance)
 {
     // PCL Implementation
 
@@ -329,7 +329,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::Clu
     for (int i = 0; i < cloud->points.size(); i++) 
     	tree3D->insertPointXYZ(cloud->points[i], i); 
  
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;
     //std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = euclideanCluster(cloud, tree3D, 3.0);
 	std::cout << "clusters.size(): " << clusters.size() << std::endl;
 
