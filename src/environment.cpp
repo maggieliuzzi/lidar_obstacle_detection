@@ -3,17 +3,28 @@
 // for exploring self-driving car sensors
 
 /*
-    Obstacle detection using LiDAR
+    Obstacle detection pipeline on a cityscape environment using LiDAR
 
-    Streaming of PCD files, filtering/downsampling, segmenting ground plane and obstacles, clustering obstacles and displaying bounding boxes around them
+    Streaming of PCD files, filtering, segmenting ground plane and obstacles, clustering obstacles and displaying bounding boxes around them
 
     Custom implementation of:
-        Segmentation
+        RANSAC Segmentation
         Euclidean Clustering optimised with a k-d tree for more efficient nearby neighbour search
 
     Uses PCL types and functions for:
-        Filtering/ downsampling
+        Filtering
         PointCloud, PointXYZ and PointXYZI types
+
+TODO: since I'm able to detect obstacles in single frames, I can make my pipeline even more robust by tracking detections over the history of frames. 
+I can create associations between detections in frames and use that to track objects.
+One way to create associations between two different frames is by how close in proximity two detections are to each other and how similar they look. 
+There are also a lot more filtering procedures that you can explore, such as looking at detection that are seen in consecutive frames before they are considered. 
+You could also filter based on bounding boxes, their volume and shapes. By deploying tracking methods and associations you could try to dynamically build the shapes of obstacles. Examples of this might be, maybe you see the backside of a long truck, the lidar only first sees the back of the truck. Then later you drive past the truck. letting the lidar see the trucks side. 
+There are many ways to keep exploring and making the detection process more robust.
+
+TODO: challenge problem: detecting and tracking a bicylist riding in front of the car, along with detecting/tracking the other surrounding obstacles in the scene, using data from src/sensors/data/pcd/data_2
+
+TODO: check rubric on Udacity Classroom: https://review.udacity.com/#!/rubrics/2529/view
 */
 
 #include "sensors/lidar.h"
