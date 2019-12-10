@@ -2,6 +2,20 @@
 // Create simple 3d highway enviroment using PCL
 // for exploring self-driving car sensors
 
+/*
+    Obstacle detection using LiDAR
+
+    Streaming of PCD files, filtering/downsampling, segmenting ground plane and obstacles, clustering obstacles and displaying bounding boxes around them
+
+    Custom implementation of:
+        Segmentation
+        Euclidean Clustering optimised with a k-d tree for more efficient nearby neighbour search
+
+    Uses PCL types and functions for:
+        Filtering/ downsampling
+        PointCloud, PointXYZ and PointXYZI types
+*/
+
 #include "sensors/lidar.h"
 // #include "render/render.h"
 // #include "processPointClouds.h"
@@ -164,10 +178,11 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
 
     /*
     // Segmentation
-    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TODO: try 25, 0.3  // Validated, it should look like this, with a dot (no arrow)
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TODO: try 25, 0.3  // Validated, it should look like this, with a dot (no arrow)
     // renderPointCloud(viewer, segmentedCloud.first, "obstacleCloud");
     renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
     */
+
 
     /*
     // Clustering
