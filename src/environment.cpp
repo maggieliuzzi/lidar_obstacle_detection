@@ -134,7 +134,17 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 }
 
 
-void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI>* pointCloudXYZIProcessor, const pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud)
+
+// TODO: try using: const pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud to fix linkage errors
+// Notice that in the function header you can optionally make inputCloud a constant reference by doing const and & at the end of the variable definition. 
+// You don't have to do this but you are not actually changing the inputCloud at all, just using it as an input for your point processor function. 
+// The benefit of using a constant reference is better memory efficiency, since you don't have to write to that variable's memory, just read from it, so it's a slight performance increase. 
+// If you do make this a const reference though, make sure not to modify it, or else you will get a compile error.
+
+
+
+// void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI>* pointCloudXYZIProcessor, const pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud)  // TODO: try
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI> pointCloudXYZIProcessor, const pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud)  // TODO: try without *, const and last &
 {
     // Opens 3D view and displays city block
 
@@ -143,22 +153,27 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
 
     // PCL with ~120,000 points
     // pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud = pointCloudXYZIProcessor->loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");
+    // pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");
     // renderPointCloud(viewer, pcdCloud, "pcdCloud");  // if no colour specified, defaults to colour coding from Intensity component
 
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(pcdCloud, 0.5, Eigen::Vector4f (-10, -10, -5, 1), Eigen::Vector4f (30, 10, 10, 1));
-    renderPointCloud(viewer, filteredCloud, "filteredCloud");
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f (-10, -10, -5, 1), Eigen::Vector4f (30, 10, 10, 1));  // TODO: try 0.3, -10, -5, -2, 1, 30, 8, 1, 1
+    // or no const nor &, inputCloud = pointCloudXYZIProcessor.filterCloud
+    
+    renderPointCloud(viewer, filteredCloud, "filteredCloud");  // TODO: remove after implementing segmentation and clustering
 
 
     /*
     // Segmentation
-    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentXYZIPlane(filteredCloud, 50, 0.3);
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud;
+    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TODO: try 25, 0.3  // Validated, it should look like this, with a dot (no arrow)
+    // renderPointCloud(viewer, segmentedCloud.first, "obstacleCloud");
+    renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
+    */
 
+    /*
     // Clustering
-
+    // All validated, including . vs ->
     // PCL Euclidean Clustering  // TODO: try with custom implementation
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // validated, with .  // TODO: try 0.53, 10, 500
     // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something
     
     int clusterId = 0;
@@ -166,7 +181,9 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
 
     for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : obstacleClusters)
     {
-        renderPointCloud(viewer, cluster, "obstCloud"+std::to_string(clusterId), colours[clusterId % 3]);
+        std::cout << "Cluster size: " << pointCloudXYZIProcessor.numPoints(cluster);
+
+        renderPointCloud(viewer, cluster, "obstCloud"+std::to_string(clusterId), colours[clusterId % colours.size()]);
     
         // Bounding boxes
         // Since all the detectable vehicles in this scene are along the same axis as our car, the simple already set up bounding box function in point processor should yield good results.
@@ -176,7 +193,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
         ++clusterId;
     }
 
-    renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
+    // TODO: if clustering parts of the wall, try changing size of box cropped, or look at dimensions and filter based on the bounding box. eg. < certain width ignore, or only consider object > certain dimensions
     */
 
 
@@ -195,13 +212,43 @@ int main (int argc, char** argv)
     pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
+
     // Simulated pointcloud
     // simpleHighway(viewer);
-    // Real pointcloud
-    cityBlock(viewer);
 
+    // ProcessPointClouds<pcl::PointXYZI>* pointCloudXYZIProcessor = new ProcessPointClouds<pcl::PointXYZI>();  // on the heap
+    ProcessPointClouds<pcl::PointXYZI> pointCloudXYZIProcessor;  // on the stack
+
+
+    // pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");
+    
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud;
+
+    // argument: folder directory that contains all the sequentially ordered pcd files to process
+    // return: a chronologically ordered vector of all those file names
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
+    // can go through the stream vector in a couple of ways, one option is to use an iterator
+    auto streamIterator = stream.begin();  // make iterator start from the beginning
+
+    // pcl viewer run cycle  // frame update loop
     while (!viewer->wasStopped ())
     {
+        // Clear viewer - previously rendered points and shapes
+        viewer->removeAllPointClouds();
+        viewer->removeAllShapes();
+
+        // Load PCD and run obstacle detection pipeline
+        pcdCloud = pointCloudXYZIProcessor.loadPcd((*streamIterator).string());  // dereferencing streamIterator and convert output path to a string
+
+        // Real pointcloud
+        cityBlock(viewer, pointCloudXYZIProcessor, pcdCloud);
+
+        streamIterator++;  // TODO: check if same as ++streamIterator;
+        if (streamIterator == stream.end())  // when it reaches the end
+            streamIterator = stream.begin();  // reset it back to the beginning
+
+        // Controls the frame rate, by default it waits 1 time step, which would make it run as fast as possible. Depending on how timing efficient your obstacle detection functions were set up the faster the viewer's frame rate will be
+        // TODO: check for optimisations
         viewer->spinOnce ();
     } 
 }
