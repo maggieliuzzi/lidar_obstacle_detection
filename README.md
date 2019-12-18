@@ -1,4 +1,4 @@
-# Lidar-only Object Detection
+# Object detection (LiDAR only)
 
 <img src="media/ObstacleDetectionFPS.gif" width="700" height="400" />
 
