@@ -1,5 +1,3 @@
-// PCL lib Functions for processing point clouds 
-
 #ifndef PROCESSPOINTCLOUDS_H_
 #define PROCESSPOINTCLOUDS_H_
 
@@ -24,10 +22,9 @@ template<typename PointT>
 class ProcessPointClouds {
 public:
 
-    //constructor
-    ProcessPointClouds();
-    //deconstructor
-    ~ProcessPointClouds();
+    ProcessPointClouds();  // Constructor
+
+    ~ProcessPointClouds();  // Destructor
 
     void numPoints(typename pcl::PointCloud<PointT>::Ptr cloud);
 
@@ -35,14 +32,11 @@ public:
 
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SeparateClouds(pcl::PointIndices::Ptr inliers, typename pcl::PointCloud<PointT>::Ptr cloud);
 
-    // Temporary fix -> didn't work
-    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> SegmentXYZIPlane(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, int maxIterations, float distanceThreshold);
-
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold);
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> PCLClustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
 
-    std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance);  // prev: std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance);
+    std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float distanceTolerance);
 
     Box BoundingBox(typename pcl::PointCloud<PointT>::Ptr cluster);
 
@@ -51,6 +45,5 @@ public:
     typename pcl::PointCloud<PointT>::Ptr loadPcd(std::string file);
 
     std::vector<boost::filesystem::path> streamPcd(std::string dataPath);
-  
 };
 #endif /* PROCESSPOINTCLOUDS_H_ */
