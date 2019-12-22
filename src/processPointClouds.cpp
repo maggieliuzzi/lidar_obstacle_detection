@@ -28,23 +28,21 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     std::cout << "PointCloud before filtering: " << cloud->width * cloud->height << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
 
     typename pcl::PointCloud<PointT>::Ptr filteredCloud(new pcl::PointCloud<PointT>);
+  
+    // Voxel-grid subsampling of points  // TODO: check best order
+    pcl::VoxelGrid<PointT> voxelGrid;
+    std::cout << typeid(voxelGrid).name() << std::endl;
+    voxelGrid.setInputCloud(cloud);
+    voxelGrid.setLeafSize(filterRes, filterRes, filterRes);  // using filterRes as leaf size
+    voxelGrid.filter(*filteredCloud);  // filteredCloud is a pointer, so we dereference it
 
-    // Region-based filtering  // TOCHECK: best order
-
+    // Region-based filtering
     typename pcl::PointCloud<PointT>::Ptr croppedCloud(new pcl::PointCloud<PointT>);
     pcl::CropBox<PointT> cropBox(true);  // true because dealing with points inside cropBox
     cropBox.setMin(minPoint);
     cropBox.setMax(maxPoint);
-    cropBox.setInputCloud(cloud);
+    cropBox.setInputCloud(filteredCloud);
     cropBox.filter(*croppedCloud);  // saving results in croppedCloud
-
-    // Voxel-grid subsampling of points
-
-    pcl::VoxelGrid<PointT> voxelGrid;
-    std::cout << typeid(voxelGrid).name() << std::endl;
-    voxelGrid.setInputCloud(croppedCloud);
-    voxelGrid.setLeafSize(filterRes, filterRes, filterRes);  // using filterRes as leaf size
-    voxelGrid.filter(*filteredCloud);  // filteredCloud is a pointer, so we dereference it
 
     // Roof-point filtering
     // Using a PCL CropBox to find the roof point indices and then feeding those indices to a PCL ExtractIndices object to remove them (similar to the way the segmentation algorithm extracts points)
@@ -105,123 +103,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 }
 
 
-/*
-template<>
-std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> ProcessPointClouds<pcl::PointXYZI>::SegmentXYZIPlane(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, int maxIterations, float distanceThreshold)
-{
-    std::cout << "Total cloud->points.size(): " << cloud->points.size() << std::endl;  // 20
-
-	std::unordered_set<int> inliersResult;  // starts as 0
-	srand(time(NULL));
-	
-	// For max iterations
-	// Randomly sample subset and fit line
-	// Measure distance between every point and fitted line
-	// If distance is smaller than threshold count it as inlier
-	// Return indicies of inliers from fitted line with most inliers
-
-	while(maxIterations--) // > 0
-	{
-		std::unordered_set<int> inliers; // hash set - order doesn't matter, we're just hashing into the index // in sets, elements have to be unique, else it won't insert them
-		while(inliers.size() <= 3)
-			inliers.insert(rand()%(cloud->points.size())); // using modulo, value between 0 and the size of cloud // inliers will hold the index of points
-
-		float x1, y1, z1, x2, y2, z2, x3, y3, z3;
-
-		std::cout << "inliers.size(): " << inliers.size() << std::endl;
-		auto itr = inliers.begin(); // pointer to the beginning of inliers
-		x1 = cloud->points[*itr].x; // checking what value it is by dereferencing that pointer
-		y1 = cloud->points[*itr].y;
-        z1 = cloud->points[*itr].z;
-		itr++;  // increment the iterator by one
-		x2 = cloud->points[*itr].x;
-		y2 = cloud->points[*itr].y;
-        z2 = cloud->points[*itr].z;
-		itr++;
-		x3 = cloud->points[*itr].x;
-		y3 = cloud->points[*itr].y;
-        z3 = cloud->points[*itr].z;
-
-        // 3D
-        double u1, u2, u3, v1, v2, v3;
-        u1 = (x2 - x1);
-        u2 = (y2 - y1);
-        u3 = (z2 - z1);
-        v1 = (x3 - x1);
-        v2 = (y3 - y1);
-        v3 = (z3 - z1);
-        // v1 [3] = {u1, u2, u3};
-        // v2 [3] = {v1, v2, v3};
-
-        double i, j, k;
-        i = u2 * v3 - v2 * u3;
-        j = v1 * u3 - u1 * v3;
-        k = u1 * v2 - v1 * u2;
-
-        // crossProd [3] = {i, j, k};
-
-        double a, b, c, d;
-		a = i;
-		b = j;
-		c = k;
-        d = -1.0 * (i * x1 + j * y1 + k * z1);  // for 3D
-
-		for(int i = 0; i < cloud->points.size(); i++)
-		{
-			if (inliers.count(i) > 0) // if point is one of the two points that make the line
-				continue;
-
-			pcl::PointXYZI point = cloud->points[i];  // abstract with PointT (YXZI)
-			std::cout << "point: " << point << std::endl;
-
-			float x3 = point.x; // member x from point
-			float y3 = point.y;
-            float z3 = point.z;
-
-			double distance = fabs(a * x3 + b * y3 + c * z3 + d) / sqrt(a * a + b * b + c * c); 
-			
-			std::cout << "distance: " << distance << std::endl;
-			// TOFIX: d is always 0, so all points get considered as inliers
-
-			if (distance <= distanceThreshold)
-				inliers.insert(i);
-		}
-
-		std::cout << "fitted line: inliers.size(): " << inliers.size() << std::endl;
-
-		if (inliers.size() > inliersResult.size())
-		{
-			inliersResult = inliers;
-		}
-	}
-
-    std::unordered_set<int> inliers = inliersResult;
-
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloudInliers(new pcl::PointCloud<pcl::PointXYZI>());
-	pcl::PointCloud<pcl::PointXYZI>::Ptr cloudOutliers(new pcl::PointCloud<pcl::PointXYZI>());
-
-	for(int index = 0; index < cloud->points.size(); index++)
-	{
-		pcl::PointXYZI point = cloud->points[index];  // abstract with PointT. must allow PointXYZI
-		if(inliers.count(index))
-			cloudInliers->points.push_back(point);
-		else
-			cloudOutliers->points.push_back(point);
-	}
-	std::cout << "cloud->points.size(): " << cloud->points.size() << std::endl;
-	std::cout << "cloudInliers->points.size(): " << cloudInliers->points.size() << std::endl;
-	std::cout << "cloudOutliers->points.size(): " << cloudOutliers->points.size() << std::endl;
-
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segResult;
-    segResult.first = cloudOutliers;
-    segResult.second = cloudInliers;
-
-    // Not using SeparateClouds function at all
-
-	return segResult;
-}
-*/
-
 template<typename PointT>
 std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold)
 {
@@ -235,15 +116,14 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 	// If distance is smaller than threshold count it as inlier
 	// Return indicies of inliers from fitted line with most inliers
 
-	while(maxIterations--) // > 0
+	while(maxIterations--)  // > 0
 	{
-		std::unordered_set<int> inliers; // hash set - order doesn't matter, we're just hashing into the index  // in sets, elements have to be unique, else it won't insert them
+		std::unordered_set<int> inliers;  // hash set - order doesn't matter, we're just hashing into the index  // in sets, elements have to be unique, else it won't insert them
 		while(inliers.size() <= 3)
 			inliers.insert(rand()%(cloud->points.size())); // using modulo, value between 0 and the size of cloud  // inliers will hold the index of points
 
 		float x1, y1, z1, x2, y2, z2, x3, y3, z3;
 
-		std::cout << "inliers.size(): " << inliers.size() << std::endl;
 		auto itr = inliers.begin();  // pointer to the beginning of inliers
 		x1 = cloud->points[*itr].x;  // checking value by dereferencing pointer
 		y1 = cloud->points[*itr].y;
@@ -286,24 +166,19 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 			if (inliers.count(i) > 0)  // if point is one of the two points that make the line
 				continue;
 
-			pcl::PointXYZ point = cloud->points[i];  // TODO: abstract with PointT (YXZI)
-			std::cout << "point: " << point << std::endl;
-
+			PointT point = cloud->points[i];
 			float x3 = point.x;  // member x from point
 			float y3 = point.y;
             float z3 = point.z;
 
-			double distance = fabs(a * x3 + b * y3 + c * z3 + d) / sqrt(a * a + b * b + c * c); 
-			
-			std::cout << "Distance: " << distance << std::endl;  // TOCHECK: if still relevant: TOFIX: d is always 0, so all points get considered as inliers
+			double distance = fabs(a * x3 + b * y3 + c * z3 + d) / sqrt(a * a + b * b + c * c);
 
 			if (distance <= distanceThreshold)
 				inliers.insert(i);
 		}
 
-		std::cout << "Fitted line: inliers.size(): " << inliers.size() << std::endl;
-
-		if (inliers.size() > inliersResult.size())
+        std::cout << "inliers.size(): " << inliers.size() << std::endl;
+        if (inliers.size() > inliersResult.size())
 		{
 			inliersResult = inliers;
 		}
@@ -316,7 +191,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 
 	for (int index = 0; index < cloud->points.size(); index++)
 	{
-		pcl::PointXYZ point = cloud->points[index];  // TODO: abstract with PointT
+		PointT point = cloud->points[index];
 
 		if (inliers.count(index))
 			cloudInliers->points.push_back(point);
@@ -458,7 +333,7 @@ template<typename PointT>
 Box ProcessPointClouds<PointT>::BoundingBox(typename pcl::PointCloud<PointT>::Ptr cluster)
 {
     PointT minPoint, maxPoint;
-    pcl::getMinMax3D(*cluster, minPoint, maxPoint);  // parameters passed by reference
+    pcl::getMinMax3D(*cluster, minPoint, maxPoint);
 
     Box box;
     box.x_min = minPoint.x;

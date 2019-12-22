@@ -124,9 +124,7 @@ void simulatedXYZHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 }
 
 
-// TOTRY (could fix linkage errors?): make 
-
-
+// TODO: complete
 void objectDetectionXYZ(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZ> pointCloudXYZProcessor, const pcl::PointCloud<pcl::PointXYZ>::Ptr& inputCloud)  // TOTRY: ProcessPointClouds<pcl::PointXYZ>* pointCloudXYZProcessor (* if pointer)  // inputCloud as a constant reference (since it won't be changed within the function), for better memory efficiency/ slight performance increase, by not writing to that variable's memory, just reading from it.
 {
     /* Performs object detection pipeline on a real PointXYZI PCD */
@@ -138,7 +136,8 @@ void objectDetectionXYZ(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessP
     // renderPointCloud(viewer, pcdCloud, "pcdCloud");  // if no colour specified, defaults to colour-coding from intensity component  // If PointXYZ, all points are rendered in white
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud = pointCloudXYZProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f (-10, -10, -5, 1), Eigen::Vector4f (30, 10, 10, 1));  // TODO: try 0.3, -10, -5, -2, 1, 30, 8, 1, 1
-    
+    // renderPointCloud(viewer, filteredCloud, "filteredCloud");  // If PointXYZI and no colour specified, defaults to colour-coding from intensity component. If PointXYZ, all white
+
     // Segmentation
 
     // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TOTRY: 25
@@ -171,8 +170,6 @@ void objectDetectionXYZ(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessP
 
     // TODO: if clustering parts of the wall, try changing size of box cropped, or look at dimensions and filter based on the bounding box. eg. if object's width < certain width (or certain dimensions), ignore
     */
-
-    renderPointCloud(viewer, filteredCloud, "filteredCloud");  // TODO: remove after implementing segmentation and clustering
 }
 
 
@@ -182,25 +179,26 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Downsampling and filtering
     
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f (-10, -10, -5, 1), Eigen::Vector4f (30, 10, 10, 1));  // TODO: try 0.3, -10, -5, -2, 1, 30, 8, 1, 1
-    
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-10, -10, -5, 1), Eigen::Vector4f(30, 10, 10, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    // renderPointCloud(viewer, filteredCloud, "filteredCloud");
+
     // Segmenting ground and obstacles
 
-    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TOTRY: 25
-    // renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TOTRY: 10, 0.2
+    renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
 
     // Clustering obstacle points into objects
-
-    /*
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions // TOTRY: 0.53, 10, 500
+  
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions  // TOTRY: 1.0, 0.53, 10, 500
     // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something as well
-    
-    std::vector<Color> colours = {Color(1,0,0), Color(0,1,0), Color(0,0,1)};  // TODO: add more colours to cycle through
+
+    std::vector<Color> colours = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)};  // TODO: add more colours to cycle through
     int clusterId = 0;
 
     for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : obstacleClusters)
     {
-        std::cout << "Cluster size: " << pointCloudXYZIProcessor.numPoints(cluster);
+        std::cout << "Cluster size: " << std::endl;
+        pointCloudXYZIProcessor.numPoints(cluster);
 
         renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
     
@@ -214,9 +212,6 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
     }
 
     // TODO: if clustering parts of the wall, try changing size of box cropped, or look at dimensions and filter based on the bounding box. eg. if object's width < certain width (or certain dimensions), ignore
-    */
-
-    renderPointCloud(viewer, filteredCloud, "filteredCloud");  // TODO: remove after implementing segmentation and clustering  // If PointXYZI and no colour specified, defaults to colour-coding from intensity component. If PointXYZ, all white
 }
 
 
@@ -238,18 +233,20 @@ int main(int argc, char** argv)
     */
 
     ProcessPointClouds<pcl::PointXYZI> pointCloudXYZIProcessor;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");  // PCD with ~120,000 points
-    // renderPointCloud(viewer, pcdCloud, "pcdCloud");
-    objectDetectionXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);  // obstacle-detection pipeline
-
-    while (!viewer->wasStopped())  // PC Viewer run cycle  // frame update loop
-    {
-        viewer->spinOnce ();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
-    }
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud;
 
     /*
+    pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");  // PCD with ~120,000 points
+    // renderPointCloud(viewer, pcdCloud, "pcdCloud");
+    objectDetectionXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);  // obstacle-detection pipeline
+    while (!viewer->wasStopped())  // PC Viewer run cycle  // frame update loop
+    {
+        viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
+    }
+    */
+
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
-    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
     
     auto streamIterator = stream.begin();  // make iterator start from the beginning  // Using an iterator to go through the stream vector
 
@@ -263,13 +260,12 @@ int main(int argc, char** argv)
         pcdCloud = pointCloudXYZIProcessor.loadPcd((*streamIterator).string());  // dereferencing streamIterator and converting output path to string
 
         // Running obstacle-detection pipeline
-        cityBlockXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);
+        objectDetectionXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);
 
         streamIterator++;  // TODO: check if same as ++streamIterator;
         if (streamIterator == stream.end())  // when it reaches the end
             streamIterator = stream.begin();  // reset back to the beginning
 
-        viewer->spinOnce ();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
+        viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
     }
-    */
 }
