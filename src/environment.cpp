@@ -217,7 +217,7 @@ int main(int argc, char** argv)
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
 
-    simulatedXYZHighway(viewer);  // simulated PointXYZ pointcloud
+    // simulatedXYZHighway(viewer);  // simulated PointXYZ pointcloud
 
     /* 
     // PointXYZ object detection
@@ -236,14 +236,13 @@ int main(int argc, char** argv)
     objectDetectionXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);  // obstacle-detection pipeline
     */
 
-
+    /*
     while (!viewer->wasStopped())  // PC Viewer run cycle  // frame update loop
     {
         viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
     }
+    */
 
-
-    /*
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
     std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
     
@@ -267,5 +266,4 @@ int main(int argc, char** argv)
 
         viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
     }
-    */
 }
