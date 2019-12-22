@@ -93,7 +93,6 @@ std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int 
 		y2 = cloud->points[*itr].y;
         z3 = cloud->points[*itr].z;
 
-
         // 3D
         double u1, u2, u3, v1, v2, v3;
         u1 = (x2 - x1);
@@ -119,7 +118,7 @@ std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int 
         d = −(i * x1 + j * y1 + k * z1);
         // TODO: add d for 3D
 
-		for(int i = 0; i < cloud->points.size(); i++)
+		for (int i = 0; i < cloud->points.size(); i++)
 		{
 			if (inliers.count(i) > 0) // if point is one of the two points that make the line
 				continue;

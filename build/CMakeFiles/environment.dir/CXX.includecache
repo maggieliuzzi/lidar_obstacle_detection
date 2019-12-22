@@ -13,8 +13,12 @@ iostream
 -
 
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/environment.cpp
+pcl/visualization/pcl_visualizer.h
+-
 sensors/lidar.h
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/lidar.h
+processPointClouds.h
+/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/processPointClouds.h
 processPointClouds.cpp
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/processPointClouds.cpp
 
@@ -61,10 +65,6 @@ cluster/kdtree.h
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/render/box.h
 Eigen/Geometry
 -
-
-/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/render/render.cpp
-render.h
-/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/render/render.h
 
 /Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/render/render.h
 pcl/visualization/pcl_visualizer.h
