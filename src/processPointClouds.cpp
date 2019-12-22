@@ -116,7 +116,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 	// If distance is smaller than threshold count it as inlier
 	// Return indicies of inliers from fitted line with most inliers
 
-	while(maxIterations--)  // > 0
+	while (maxIterations--)  // > 0
 	{
 		std::unordered_set<int> inliers;  // hash set - order doesn't matter, we're just hashing into the index  // in sets, elements have to be unique, else it won't insert them
 		while(inliers.size() <= 3)
@@ -177,7 +177,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 				inliers.insert(i);
 		}
 
-        std::cout << "inliers.size(): " << inliers.size() << std::endl;
         if (inliers.size() > inliersResult.size())
 		{
 			inliersResult = inliers;
@@ -262,31 +261,29 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::P
 
 
 template<typename PointT>
-void proximity(int index, typename pcl::PointCloud<PointT>::Ptr pointCloud, typename pcl::PointCloud<PointT>::Ptr& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTolerance)
+void proximity(int index, const typename pcl::PointCloud<PointT>::Ptr cloud, typename pcl::PointCloud<PointT>::Ptr& cluster, std::vector<bool>& processed, KdTree<PointT>* tree, float distanceTolerance)  // & cluster (works), & tree (doesn't)
 {
 	/* 
     Helper for euclideanCluster
     */
 
     processed[index] = true;
-    cluster->points.push_back(pointCloud->points[index]);
+    cluster->points.push_back(cloud->points[index]);
 
-    typename pcl::PointCloud<PointT> nearby = tree->search(pointCloud->points[index], distanceTolerance);
+    typename pcl::PointCloud<PointT> nearby = tree->search(index, distanceTolerance);  // typename pcl::PointCloud<PointT> nearby = tree->search(cloud->points[index], distanceTolerance);
     int position = 0;
     while (position < nearby.points.size())
     {
         if (!processed[position])  // TOCHECK if still relevant: if nearby point hasn't been processed yet  // doesn't make sense anymore
-            proximity(index, pointCloud, cluster, processed, tree, distanceTolerance);
+            proximity(index, cloud, cluster, processed, tree, distanceTolerance);
         position++;
     }
 }
 
-
 template<typename PointT>
-std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename pcl::PointCloud<PointT>::Ptr cloud, KdTree* tree, float distanceTol)
+std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename pcl::PointCloud<PointT>::Ptr cloud, KdTree<PointT>* tree, float distanceTol)  // TODO: should tree be passed by reference
 {
 	std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;
-
 	std::vector<bool> processed(cloud->points.size(), false);  // same size as points, each of which starts as false
 
 	int i = 0;
@@ -297,9 +294,11 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename 
 			i++;
 			continue;
 		}
-		typename pcl::PointCloud<PointT>::Ptr cluster;
-		// proximity(i, pointCloud, cluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
-		clusters.push_back(cluster);
+
+        typename pcl::PointCloud<PointT>::Ptr newCluster(new typename pcl::PointCloud<PointT>);
+		proximity(i, cloud, newCluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
+		clusters.push_back(newCluster);  // Assertion failed: (px != 0), function operator->, file /usr/local/include/boost/smart_ptr/shared_ptr.hpp, line 734. // Abort trap: 6
+
 		i++;
 	}
 
@@ -312,13 +311,14 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
 {
     auto startTime = std::chrono::steady_clock::now();
 
-    KdTree* tree3D = new KdTree;
-    
+    KdTree<PointT>* tree3D = new KdTree<PointT>(cloud);  // on stack: KdTree<PointT> tree3D;  // TOCHECK: difference between () and no ()
+
     for (int i = 0; i < cloud->points.size(); i++) 
-    	tree3D->insertPointXYZ(cloud->points[i], i);  // TODO: abstract with PointT
- 
+    	tree3D->insertPoint(i);  // tree3D->insertPoint(cloud->points[i], i);
+    std::cout << "Finished building k-d tree" << std::endl;
+
     std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // TONOTE: here clusters don't contain indeces but points
-    // clusters = euclideanClustering(cloud, tree3D, 3.0);
+    clusters = euclideanClustering(cloud, tree3D, 3.0);
 	std::cout << "clusters.size(): " << clusters.size() << std::endl;
 
     auto endTime = std::chrono::steady_clock::now();

@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/quizCluster.dir/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/SFND_Lidar_Obstacle_Detection/src/render/render.cpp.o"
+  "CMakeFiles/quizCluster.dir/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/render/render.cpp.o"
   "CMakeFiles/quizCluster.dir/cluster.cpp.o"
   "quizCluster"
   "quizCluster.pdb"

@@ -2,32 +2,34 @@
 #include <iostream>
 
 
-struct NodePointXYZ  // node of k-d tree
+template <typename PointT>
+struct NodePoint  // node of k-d tree
 {
-	pcl::PointXYZ point;
+	PointT point;
 	int id;
-	NodePointXYZ* left;
-	NodePointXYZ* right;
+	NodePoint* left;
+	NodePoint* right;
 
-	NodePointXYZ(pcl::PointXYZ pointXYZ, int setId)
-	:	point(pointXYZ), id(setId), left(NULL), right(NULL)
+	NodePoint(PointT point, int setId)
+	:	point(point), id(setId), left(NULL), right(NULL)
 	{}
 };
 
 
+template <typename PointT>
 struct KdTree
 {
-	NodePointXYZ* root;
+	NodePoint<PointT>* root;
 
 	KdTree()
 	: root(NULL)
 	{}
 
-    void insertHelperPointXYZ(NodePointXYZ** node, uint depth, pcl::PointXYZ point, int id)  // double pointer (NodePointXYZ**) because root was defined as NodePointXYZ* (node pointer) originally, and then we pass the memory address
+    void insertHelperPoint(NodePoint<PointT>** node, uint depth, PointT point, int id)  // double pointer (NodePoint**) because root was defined as NodePoint* (node pointer) originally, and then we pass the memory address
 	{
 		if (*node == NULL)  // dereferencing to get value  // terminates when it hits a null node
 		{
-			*node = new NodePointXYZ(point, id);  // pointing root pointer to new data  // TOTRY: use a pointer reference instead, then no need to dereference it (*node)
+			*node = new NodePoint<PointT>(point, id);  // pointing root pointer to new data  // TOTRY: use a pointer reference instead, then no need to dereference it (*node)
 		}
 		else  // traverse
 		{
@@ -46,33 +48,33 @@ struct KdTree
             if (cd == 0)  // point[0]: x value
             {
                 if (point.x < (*node)->point.x)
-                    insertHelperPointXYZ(&((*node)->left), depth + 1, point, id);  // passing address of dereferenced node's left child
+                    insertHelperPoint(&((*node)->left), depth + 1, point, id);  // passing address of dereferenced node's left child
                 else
-                    insertHelperPointXYZ(&((*node)->right), depth + 1, point, id);
+                    insertHelperPoint(&((*node)->right), depth + 1, point, id);
             }
             else if (cd == 1)
             {
                 if (point.y < (*node)->point.y)
-                    insertHelperPointXYZ(&((*node)->left), depth + 1, point, id);
+                    insertHelperPoint(&((*node)->left), depth + 1, point, id);
                 else
-                    insertHelperPointXYZ(&((*node)->right), depth + 1, point, id);
+                    insertHelperPoint(&((*node)->right), depth + 1, point, id);
             }
             else if (cd == 2)
             {
                 if (point.z < (*node)->point.z)
-                    insertHelperPointXYZ(&((*node)->left), depth + 1, point, id);
+                    insertHelperPoint(&((*node)->left), depth + 1, point, id);
                 else
-                    insertHelperPointXYZ(&((*node)->right), depth + 1, point, id);
+                    insertHelperPoint(&((*node)->right), depth + 1, point, id);
             }
 		}
 	}
 
-    void insertPointXYZ(pcl::PointXYZ point, int id)
+    void insertPoint(PointT point, int id)
 	{
-		insertHelperPointXYZ(&root, 0, point, id);  // passing the address of root
+		insertHelperPoint(&root, 0, point, id);  // passing the address of root
 	}
 
-	void search3DHelper(pcl::PointXYZ target, NodePointXYZ* node, uint depth, float distanceTol, pcl::PointCloud<pcl::PointXYZ>& nearbyPoints)
+	void search3DHelper(PointT target, NodePoint<PointT>* node, uint depth, float distanceTol, typename pcl::PointCloud<PointT>& nearbyPoints)
 	{
 		std::cout << "\nDepth: " << depth << std::endl;
 
@@ -133,9 +135,9 @@ struct KdTree
 		}
 	}
 
-	pcl::PointCloud<pcl::PointXYZ> search(pcl::PointXYZ target, float distanceTol)
+	typename pcl::PointCloud<PointT> search(PointT target, float distanceTol)
 	{
-		pcl::PointCloud<pcl::PointXYZ> nearbyPoints;  // list of pointXYZs in the tree that are within certain distance of target
+		pcl::PointCloud<PointT> nearbyPoints;  // list of points in the tree that are within certain distance of target
 
 		search3DHelper(target, root, 0, distanceTol, nearbyPoints);
 

@@ -1,7 +1,7 @@
 #include "../../render/box.h"
 #include <chrono>
 #include <string>
-#include "cluster/kdtree.h"
+#include "kdtree.h"
 
 
 // TODO: check that all multi-line if and for loops have curly brackets (else the 2nd+ statement inside will be executed regardless)
