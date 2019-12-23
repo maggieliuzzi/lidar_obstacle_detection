@@ -1,3 +1,3 @@
 *.vscode
 
-# TODO: add build directories and cmake files
+*/build/*
