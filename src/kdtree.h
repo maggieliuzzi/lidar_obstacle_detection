@@ -12,6 +12,7 @@ struct Node
 	{}
 };
 
+
 template <typename PointT>
 struct KdTree
 {
@@ -29,21 +30,12 @@ struct KdTree
 		if (*node == NULL)  // dereferencing to get value  // terminates when it hits a null node
 		{
 			*node = new Node(id);  // pointing root pointer to new data  // TOTRY: use a pointer reference instead, then no need to dereference it (*node)
+			std::cout << "Added id to tree" << std::endl;
+			std::cout << "Depth: " << depth << std::endl;
 		}
 		else  // traverse
 		{
 			uint variable = depth % 3;  // 3D, always 0, 1 or 2
-
-			// pointcloud->points[node->id].x
-			// cloud->points[node->id][variable]
-
-			// if (point[cd] < (*node)->point[cd])
-			/*
-			if ( cloud->points[id][variable] < cloud->points[&((*node)->id)][variable]   ) //  (cloud->points[node->id])[variable] )  // point[0]: x value, point[1]: y value, point[2]: z value
-				insertHelper(&((*node)->left), depth + 1, id);  // passing address of dereferenced node's left child
-			else
-				insertHelper(&((*node)->right), depth + 1, id);
-			*/
 
 			if (variable == 0)  // point[0]: x value
             {
@@ -74,13 +66,14 @@ struct KdTree
 		insertHelper(&root, 0, id);  // passing the address of root
 	}
 
-    void searchHelper(int id, Node** node, uint depth, float distanceTol, typename pcl::PointCloud<PointT>& nearbyPoints)
+    void searchHelper(int id, Node** node, uint depth, float distanceTol, std::vector<int>& nearbyPoints)
 	{
-		// std::cout << "\ndepth: " << depth << xstd::endl;
+		std::cout << "\nid: " << id << std::endl;
+		std::cout << "depth: " << depth << std::endl;
 
-		if (node != NULL)
+		if (*node != NULL)
 		{
-			// Checking if point in that node is inside the target box
+			// Checking if point in current node is inside the target box
 
 			if (   (cloud->points[(*node)->id].x >= (cloud->points[id].x - distanceTol) && cloud->points[(*node)->id].x <= (cloud->points[id].x + distanceTol)) \
 				&& (cloud->points[(*node)->id].y >= (cloud->points[id].y - distanceTol) && cloud->points[(*node)->id].y <= (cloud->points[id].y + distanceTol)) \
@@ -88,21 +81,26 @@ struct KdTree
 			{
 				// Finding distance between 3D points (node x, y, z and target x, y, z)
 
+				std::cout << "Point is in target box. Calculating distance..." << std::endl;
+
 				float distance = sqrt( (cloud->points[(*node)->id].x - cloud->points[id].x) * (cloud->points[(*node)->id].x - cloud->points[id].x) + (cloud->points[(*node)->id].y - cloud->points[id].y) * (cloud->points[(*node)->id].y - cloud->points[id].y) + (cloud->points[(*node)->id].z >= (cloud->points[id].z - cloud->points[id].z)) * (cloud->points[(*node)->id].z >= (cloud->points[id].z - cloud->points[id].z)) );
 				// std::cout << "distance: " << distance << std::endl;
 
 				if (distance <= distanceTol)
 				{
-					// std::cout << "Adding index to cluster" << std::endl;
-					nearbyPoints.points.push_back(cloud->points[(*node)->id]);  // the point the node id refers to
+					std::cout << "Distance within distance tolerance threshold. Adding index to cluster..." << std::endl;
+					nearbyPoints.push_back((*node)->id);  // prev: nearbyPoints.push_back(cloud->points[(*node)->id]);  // the point the node id refers to
 				}
 			}
 
-			// Checking box boundary to see where to flow in the tree (left or right)
+			// TODO: check if indentation/ flow is correct
 
-			uint variable = depth % 3;
+			// Checking box boundary to see where to move down next in the tree (left or right)
 
-			if (variable == 0)
+			uint varToCompare = depth % 3;
+			std::cout << "Variable to compare: " << varToCompare << std::endl;
+
+			if (varToCompare == 0)  // x
 			{
 				if ( (cloud->points[id].x - distanceTol) < cloud->points[(*node)->id].x )  // if <, that box is in the left region
 					std::cout << "Moving down (left)" << std::endl;
@@ -111,7 +109,7 @@ struct KdTree
 					std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPoints);
 			}
-			else if (variable == 1)
+			else if (varToCompare == 1)  // y
 			{
 				if ( (cloud->points[id].y - distanceTol) < cloud->points[(*node)->id].y )
 					std::cout << "Moving down (left)" << std::endl;
@@ -120,7 +118,7 @@ struct KdTree
 					std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPoints);
 			}
-			else if (variable == 2)
+			else if (varToCompare == 2)  // z
 			{
 				if ( (cloud->points[id].z - distanceTol) < cloud->points[(*node)->id].z )
 					std::cout << "Moving down (left)" << std::endl;
@@ -132,9 +130,9 @@ struct KdTree
 		}
     }
 
-    typename pcl::PointCloud<PointT> search(int id, float distanceTol)
+    std::vector<int> search(int id, float distanceTol)
 	{
-        typename pcl::PointCloud<PointT> nearbyPoints;  // TODO: make it a pointer
+        std::vector<int> nearbyPoints;  // TODO: make it a pointer
 
 		searchHelper(id, &root, 0, distanceTol, nearbyPoints);
 

@@ -171,13 +171,14 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Downsampling and filtering
     
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-10, -10, -5, 1), Eigen::Vector4f(30, 10, 10, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-10, -10, -5, 0), Eigen::Vector4f(30, 10, 5, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
     // renderPointCloud(viewer, filteredCloud, "filteredCloud");
 
     // Segmenting ground and obstacles
 
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TOTRY: 10, 0.2
-    renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.2);  // TOTRY: 10, 0.2
+    renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud", Color(0, 1, 0));
+    renderPointCloud(viewer, segmentedCloud.first, "obstacleCloud", Color(1, 0, 0));  // comment out once clustering bug is fixed
 
     // Clustering obstacle points into objects
   
@@ -193,13 +194,15 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
         std::cout << "Cluster size: " << std::endl;
         pointCloudXYZIProcessor.numPoints(cluster);
 
-        renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
+        // Rendering cluster
+
+        //renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
     
-        // Bounding boxes
+        // Rendering bounding box
 
         // Since all the detectable vehicles in this scene are along the same axis as our car, the simple already-set-up bounding box function should yield good results.
-        Box box = pointCloudXYZIProcessor.BoundingBox(cluster);
-        renderBox(viewer, box, clusterId);
+        //Box box = pointCloudXYZIProcessor.BoundingBox(cluster);
+        //renderBox(viewer, box, clusterId);
 
         ++clusterId;
     }
