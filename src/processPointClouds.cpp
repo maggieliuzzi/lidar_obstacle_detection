@@ -267,14 +267,18 @@ void proximity(int index, const typename pcl::PointCloud<PointT>::Ptr cloud, typ
     Helper for euclideanCluster
     */
 
+
     processed[index] = true;
     cluster->points.push_back(cloud->points[index]);
 
-    typename pcl::PointCloud<PointT> nearby = tree->search(index, distanceTolerance);  // typename pcl::PointCloud<PointT> nearby = tree->search(cloud->points[index], distanceTolerance);
+    // Segfault: 11
+    std::vector<int> nearby = tree->search(index, distanceTolerance);  //// prev: typename pcl::PointCloud<PointT> nearby = tree->search(cloud->points[index], distanceTolerance);
+    //// std::vector<int> nearby;
+
     int position = 0;
-    while (position < nearby.points.size())
+    while (position < nearby.size())
     {
-        if (!processed[position])  // TOCHECK if still relevant: if nearby point hasn't been processed yet  // doesn't make sense anymore
+        if (!processed[position])
             proximity(index, cloud, cluster, processed, tree, distanceTolerance);
         position++;
     }
@@ -296,7 +300,8 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename 
 		}
 
         typename pcl::PointCloud<PointT>::Ptr newCluster(new typename pcl::PointCloud<PointT>);
-		proximity(i, cloud, newCluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
+		std::cout << "Populating new cluster" << std::endl;
+        proximity(i, cloud, newCluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
 		clusters.push_back(newCluster);  // Assertion failed: (px != 0), function operator->, file /usr/local/include/boost/smart_ptr/shared_ptr.hpp, line 734. // Abort trap: 6
 
 		i++;
