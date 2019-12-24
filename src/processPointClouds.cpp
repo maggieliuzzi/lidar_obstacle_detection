@@ -12,10 +12,9 @@ ProcessPointClouds<PointT>::~ProcessPointClouds() {}
 
 
 template<typename PointT>
-int ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
+void ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
 {
     std::cout << cloud->points.size() << std::endl;
-    return cloud->points.size();
 }
 
 
