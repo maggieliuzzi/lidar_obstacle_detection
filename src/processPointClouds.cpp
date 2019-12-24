@@ -319,7 +319,7 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
     KdTree<PointT>* tree3D = new KdTree<PointT>(cloud);  // on stack: KdTree<PointT> tree3D;  // TOCHECK: difference between () and no ()
 
     for (int i = 0; i < cloud->points.size(); i++) 
-    	tree3D->insertPoint(i);  // tree3D->insertPoint(cloud->points[i], i);
+    	tree3D->insertPointIndex(i);  // tree3D->insertPoint(cloud->points[i], i);
     std::cout << "Finished building k-d tree" << std::endl;
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // TONOTE: here clusters don't contain indeces but points

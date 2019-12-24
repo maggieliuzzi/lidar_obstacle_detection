@@ -61,7 +61,7 @@ struct KdTree
 		}
     }
     
-    void insertPoint(int id)
+    void insertPointIndex(int id)
 	{
 		insertHelper(&root, 0, id);  // passing the address of root
 	}
