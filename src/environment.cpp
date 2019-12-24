@@ -265,6 +265,6 @@ int main(int argc, char** argv)
         if (streamIterator == stream.end())  // when it reaches the end
             streamIterator = stream.begin();  // reset back to the beginning
 
-        viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
+        viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate depends on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
     }
 }
