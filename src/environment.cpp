@@ -130,18 +130,18 @@ void objectDetectionXYZ(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessP
 
     // Filtering
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud = pointCloudXYZProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-10, 5, -5, 1), Eigen::Vector4f(30, 5, 5, 1));  // TODO: try 0.3, -10, -5, -2, 1, 30, 8, 1, 1
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud = pointCloudXYZProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-15, -15, -10, 1), Eigen::Vector4f(30, 15, 10, 1));  // TODO: try 0.3, -10, -5, -2, 1, 30, 8, 1, 1
     // renderPointCloud(viewer, filteredCloud, "filteredCloud");
 
     // Segmentation
 
-    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentedCloud = pointCloudXYZProcessor.SegmentPlane(filteredCloud, 50, 0.3);  // TOTRY: 10, 0.2
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentedCloud = pointCloudXYZProcessor.SegmentPlane(filteredCloud, 50, 0.2);  // TOTRY: 10, 0.2
     renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud");
 
     // Clustering
 
     // std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> obstacleClusters = pointCloudXYZProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions  // TOTRY: 1.0, 0.53, 10, 500
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> obstacleClusters = pointCloudXYZProcessor.Clustering(segmentedCloud.first, 0.1);
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> obstacleClusters = pointCloudXYZProcessor.Clustering(segmentedCloud.first, 1.0);
     // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something as well
 
     std::vector<Color> colours = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)};  // TODO: add more colours to cycle through
@@ -171,19 +171,19 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Downsampling and filtering
     
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-15, -15, -10, 1), Eigen::Vector4f(30, 15, 10, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-15, -10, -5, 1), Eigen::Vector4f(30, 10, 5, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
     // renderPointCloud(viewer, filteredCloud, "filteredCloud");
 
     // Segmenting ground and obstacles
 
     std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedCloud = pointCloudXYZIProcessor.SegmentPlane(filteredCloud, 50, 0.2);  // TOTRY: 10, 0.2
     renderPointCloud(viewer, segmentedCloud.second, "groundPlaneCloud", Color(0, 1, 0));
-    // renderPointCloud(viewer, segmentedCloud.first, "obstacleCloud", Color(1, 0, 0));  // comment out once clustering bug is fixed
+    // renderPointCloud(viewer, segmentedCloud.first, "obstacleCloud", Color(1, 0, 0));
 
     // Clustering obstacle points into objects
   
     //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions  // TOTRY: 1.0, 0.53, 10, 500
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.Clustering(segmentedCloud.first, 2.0);
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.Clustering(segmentedCloud.first, 0.5);
     // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something as well
 
     std::vector<Color> colours = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)};  // TODO: add more colours to cycle through

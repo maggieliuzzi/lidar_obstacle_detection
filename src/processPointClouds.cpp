@@ -12,9 +12,10 @@ ProcessPointClouds<PointT>::~ProcessPointClouds() {}
 
 
 template<typename PointT>
-void ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
+int ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
 {
     std::cout << cloud->points.size() << std::endl;
+    return cloud->points.size();
 }
 
 
@@ -326,7 +327,7 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
     KdTree<PointT>* tree3D = new KdTree<PointT>(cloud);  // on stack: KdTree<PointT> tree3D;  // TOCHECK: difference between () and no ()
 
     for (int i = 0; i < cloud->points.size(); i++) 
-    	tree3D->insertPointIndex(i);  // tree3D->insertPoint(cloud->points[i], i);
+    	tree3D->insertPointIndex(i);
     std::cout << "\nKD Tree Built - Size : " << cloud->points.size() << "\n" << std::endl;
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // TONOTE: here clusters don't contain indeces but points
