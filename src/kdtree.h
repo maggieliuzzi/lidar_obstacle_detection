@@ -100,16 +100,16 @@ struct KdTree
 			uint varToCompare = depth % 3;
 			std::cout << "Variable to compare: " << varToCompare << std::endl;
 
-			if (varToCompare == 0)  // x
+			if (varToCompare == 0)  // considering x dimension
 			{
-				if ( (cloud->points[id].x - distanceTol) < cloud->points[(*node)->id].x )  // if <, that box is in the left region
+				if ( (cloud->points[id].x - distanceTol) < cloud->points[(*node)->id].x )  // if left boundary of box is < node's x|y|z value, that box is in the left region
 					std::cout << "Moving down (left)" << std::endl;
 					searchHelper(id, &((*node)->left), depth + 1, distanceTol, nearbyPointIds);
 				if ( (cloud->points[id].x + distanceTol) > cloud->points[(*node)->id].x )  // if left edge of the box is greater than the node's x or y value, then that box is in the right region
 					std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPointIds);
 			}
-			else if (varToCompare == 1)  // y
+			else if (varToCompare == 1)  // considering y dimension
 			{
 				if ( (cloud->points[id].y - distanceTol) < cloud->points[(*node)->id].y )
 					std::cout << "Moving down (left)" << std::endl;
@@ -118,7 +118,7 @@ struct KdTree
 					std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPointIds);
 			}
-			else if (varToCompare == 2)  // z
+			else if (varToCompare == 2)  // considering z dimension
 			{
 				if ( (cloud->points[id].z - distanceTol) < cloud->points[(*node)->id].z )
 					std::cout << "Moving down (left)" << std::endl;
@@ -134,7 +134,7 @@ struct KdTree
 	{
         std::vector<int> nearbyPointIds;  // TODO: make it a pointer
 
-		searchHelper(id, &root, 0, distanceTol, nearbyPointIds);
+		searchHelper(id, &root, 0, distanceTol, nearbyPointIds);  // redefine root as Node, and remove &?, then node doesn't need to be dereferenced as *node in helper function
 
 		return nearbyPointIds;
     }
