@@ -12,10 +12,9 @@ ProcessPointClouds<PointT>::~ProcessPointClouds() {}
 
 
 template<typename PointT>
-int ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
+void ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr cloud)
 {
     std::cout << cloud->points.size() << std::endl;
-    return cloud->points.size();
 }
 
 
@@ -113,7 +112,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 	
 	// For max iterations
 	// Randomly sample subset and fit line
-	// Measure distance between every point and fitted line
+	// Measure distance between every point and fitted plane
 	// If distance is smaller than threshold count it as inlier
 	// Return indicies of inliers from fitted line with most inliers
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <stdio.h>
 
 struct Node
 {
@@ -23,7 +24,7 @@ struct KdTree
 	: root(NULL), cloud(pointcloud)
 	{}
 
-    void insertHelper(Node** node, uint depth, int id)  // double pointer (Node**) because root was defined as Node* (node pointer) originally, and then we pass the memory address
+    void insertHelper(Node** node, unsigned int depth, int id)  // double pointer (Node**) because root was defined as Node* (node pointer) originally, and then we pass the memory address
 	{
 		/* Creates a new node and places it in the right position in the k-d tree */
 
@@ -35,7 +36,7 @@ struct KdTree
 		}
 		else  // traverse
 		{
-			uint variable = depth % 3;  // 3D, always 0, 1 or 2
+			unsigned int variable = depth % 3;  // 3D, always 0, 1 or 2
 
 			if (variable == 0)  // point[0]: x value
             {
@@ -66,7 +67,7 @@ struct KdTree
 		insertHelper(&root, 0, id);  // passing the address of root
 	}
 
-    void searchHelper(int id, Node** node, uint depth, float distanceTol, std::vector<int>& nearbyPointIds)
+    void searchHelper(int id, Node** node, unsigned int depth, float distanceTol, std::vector<int>& nearbyPointIds)
 	{
 		//std::cout << "\nid: " << id << std::endl;
 		//std::cout << "depth: " << depth << std::endl;
@@ -100,7 +101,7 @@ struct KdTree
 
 			// Checking box boundary to see where to move down next in the tree (left or right)
 
-			uint varToCompare = depth % 3;
+			unsigned int varToCompare = depth % 3;
 			//std::cout << "Variable to compare: " << varToCompare << std::endl;
 
 			if (varToCompare == 0)  // considering x dimension
