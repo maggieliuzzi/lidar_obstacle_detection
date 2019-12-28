@@ -15,7 +15,7 @@
 $> sudo apt install libpcl-dev
 $> cd ~
 $> git clone git@github.com:maggieliuzzi/lidar_object_detection.git
-$> cd SFND_Lidar_Obstacle_Detection
+$> cd lidar_object_detectio
 $> mkdir build && cd build
 $> cmake ..
 $> make
