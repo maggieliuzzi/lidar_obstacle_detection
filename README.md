@@ -15,7 +15,7 @@
 $> sudo apt install libpcl-dev
 $> cd ~
 $> git clone git@github.com:maggieliuzzi/lidar_object_detection.git
-$> cd lidar_object_detectio
+$> cd lidar_object_detection
 $> mkdir build && cd build
 $> cmake ..
 $> make
