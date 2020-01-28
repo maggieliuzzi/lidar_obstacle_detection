@@ -245,7 +245,8 @@ int main(int argc, char** argv)
     */
 
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
-    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
+    // "/home/maggieliuzzi/Documents/Repos/lidar_object_detection/src/sensors/data/pcd/data_1"
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/media/maggieliuzzi/2TB_EXTERNAL/FormatConversions/Development/Data/Datasets/Bins/SteveJumping/PCDs/Aggregation/record-2019-07-23_10-12-00");  // TODO: change to relative path
     
     auto streamIterator = stream.begin();  // make iterator start from the beginning  // Using an iterator to go through the stream vector
 
