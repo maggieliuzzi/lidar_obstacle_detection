@@ -171,7 +171,7 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Downsampling and filtering
     
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-10, -10, -5, 0), Eigen::Vector4f(30, 10, 5, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-10, -10, -5, 0), Eigen::Vector4f(30, 10, 5, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1  // Prev (working): inputCloud, 0.5, Eigen::Vector4f(-10, -10, -5, 0), Eigen::Vector4f(30, 10, 5, 1)
     // renderPointCloud(viewer, filteredCloud, "filteredCloud");
 
     // Segmenting ground and obstacles
@@ -182,13 +182,13 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Clustering obstacle points into objects
   
-    //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions  // TOTRY: 1.0, 0.53, 10, 500
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.Clustering(segmentedCloud.first, 1.0);
-    // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something as well
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.PCLClustering(segmentedCloud.first, 1.0, 3, 30);  // using built-in PCL euclidean-clustering functions  // TOTRY: 1.0, 0.53, 10, 500
+    // std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> obstacleClusters = pointCloudXYZIProcessor.Clustering(segmentedCloud.first, 1.0);  // TODO: use minSize for cleaning up points scattered off in the edge and distanceTolerance for something as well
 
     std::vector<Color> colours = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)};  // TODO: add more colours to cycle through
     int clusterId = 0;
 
+    cout << obstacleClusters.size() << endl;  ////
     for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : obstacleClusters)
     {
         std::cout << "Cluster size: " << std::endl;
@@ -196,17 +196,16 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
         // Rendering cluster
 
-        //renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
+        renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
     
         // Rendering bounding box
 
         // Since all the detectable vehicles in this scene are along the same axis as our car, the simple already-set-up bounding box function should yield good results.
-        //Box box = pointCloudXYZIProcessor.BoundingBox(cluster);
-        //renderBox(viewer, box, clusterId);
+        Box box = pointCloudXYZIProcessor.BoundingBox(cluster);
+        renderBox(viewer, box, clusterId);
 
         ++clusterId;
     }
-
     // TODO: if clustering parts of the wall, try changing size of box cropped, or look at dimensions and filter based on the bounding box. eg. if object's width < certain width (or certain dimensions), ignore
 }
 
@@ -233,13 +232,10 @@ int main(int argc, char** argv)
     ProcessPointClouds<pcl::PointXYZI> pointCloudXYZIProcessor;
     pcl::PointCloud<pcl::PointXYZI>::Ptr pcdCloud;
 
-    /*
-    pcdCloud = pointCloudXYZIProcessor.loadPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1/0000000000.pcd");  // PCD with ~120,000 points
+    /*  // One PCD file only
+    pcdCloud = pointCloudXYZIProcessor.loadPcd("/home/maggieliuzzi/Documents/Repos/lidar_object_detection/src/sensors/data/pcd/data_1/0000000000.pcd");  // PCD with ~120,000 points
     // renderPointCloud(viewer, pcdCloud, "pcdCloud");
     objectDetectionXYZI(viewer, pointCloudXYZIProcessor, pcdCloud);  // obstacle-detection pipeline
-    */
-
-    /*
     while (!viewer->wasStopped())  // PC Viewer run cycle  // frame update loop
     {
         viewer->spinOnce();  // Controls the frame rate. By default it waits 1 time step, which would make it run as fast as possible. Frame rate dependings on time efficiency of obstacle-detection functions  // TODO: check for possible optimisations
@@ -247,7 +243,9 @@ int main(int argc, char** argv)
     */
 
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
-    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/Users/maggieliuzzi/Documents/ComputerVision/SensorFusionNanodegree/LiDAR/SFND_Lidar_Obstacle_Detection/src/sensors/data/pcd/data_1");  // TODO: change to relative path
+    // string dir_path = "/home/maggieliuzzi/Documents/Repos/lidar_object_detection/src/sensors/data/pcd/data_1/";
+    // string dir_path = "/media/maggieliuzzi/2TB_EXTERNAL/QualityMetrics/BagsBins/Bins/E186-Bins/2019-05-09-and-06-10_Pymble";
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/media/maggieliuzzi/2TB_EXTERNAL/FormatConversions/Development/Data/Datasets/Bins/SteveJumping/PCDs/Aggregation/record-2019-07-23_10-12-00");  // TODO: change to relative path
     
     auto streamIterator = stream.begin();  // make iterator start from the beginning  // Using an iterator to go through the stream vector
 
@@ -258,6 +256,7 @@ int main(int argc, char** argv)
         viewer->removeAllShapes();
 
         // Loading PCD
+        cout << "Loading PCD file" << endl;
         pcdCloud = pointCloudXYZIProcessor.loadPcd((*streamIterator).string());  // dereferencing streamIterator and converting output path to string
 
         // Running obstacle-detection pipeline

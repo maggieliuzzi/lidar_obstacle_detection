@@ -68,8 +68,8 @@ struct KdTree
 
     void searchHelper(int id, Node** node, uint depth, float distanceTol, std::vector<int>& nearbyPointIds)
 	{
-		std::cout << "\nid: " << id << std::endl;
-		std::cout << "depth: " << depth << std::endl;
+		// std::cout << "\nid: " << id << std::endl;
+		// std::cout << "depth: " << depth << std::endl;
 
 		if (*node != NULL)
 		{
@@ -98,33 +98,33 @@ struct KdTree
 			// Checking box boundary to see where to move down next in the tree (left or right)
 
 			uint varToCompare = depth % 3;
-			std::cout << "Variable to compare: " << varToCompare << std::endl;
+			// std::cout << "Variable to compare: " << varToCompare << std::endl;
 
 			if (varToCompare == 0)  // x
 			{
 				if ( (cloud->points[id].x - distanceTol) < cloud->points[(*node)->id].x )  // if <, that box is in the left region
-					std::cout << "Moving down (left)" << std::endl;
+					// std::cout << "Moving down (left)" << std::endl;
 					searchHelper(id, &((*node)->left), depth + 1, distanceTol, nearbyPointIds);
 				if ( (cloud->points[id].x + distanceTol) > cloud->points[(*node)->id].x )  // if left edge of the box is greater than the node's x or y value, then that box is in the right region
-					std::cout << "Moving down (right)" << std::endl;
+					// std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPointIds);
 			}
 			else if (varToCompare == 1)  // y
 			{
 				if ( (cloud->points[id].y - distanceTol) < cloud->points[(*node)->id].y )
-					std::cout << "Moving down (left)" << std::endl;
+					// std::cout << "Moving down (left)" << std::endl;
 					searchHelper(id, &((*node)->left), depth + 1, distanceTol, nearbyPointIds);
 				if ( (cloud->points[id].y + distanceTol) > cloud->points[(*node)->id].y )
-					std::cout << "Moving down (right)" << std::endl;
+					// std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPointIds);
 			}
 			else if (varToCompare == 2)  // z
 			{
 				if ( (cloud->points[id].z - distanceTol) < cloud->points[(*node)->id].z )
-					std::cout << "Moving down (left)" << std::endl;
+					// std::cout << "Moving down (left)" << std::endl;
 					searchHelper(id, &((*node)->left), depth + 1, distanceTol, nearbyPointIds);
 				if ( (cloud->points[id].z + distanceTol) > cloud->points[(*node)->id].z )
-					std::cout << "Moving down (right)" << std::endl;
+					// std::cout << "Moving down (right)" << std::endl;
 					searchHelper(id, &((*node)->right), depth + 1, distanceTol, nearbyPointIds);
 			}
 		}
