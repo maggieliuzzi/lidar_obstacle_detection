@@ -112,7 +112,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 	
 	// For max iterations
 	// Randomly sample subset and fit line
-	// Measure distance between every point and fitted line
+	// Measure distance between every point and fitted plane
 	// If distance is smaller than threshold count it as inlier
 	// Return indicies of inliers from fitted line with most inliers
 
@@ -261,27 +261,29 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::P
 
 
 template<typename PointT>
-void proximity(int index, const typename pcl::PointCloud<PointT>::Ptr cloud, typename pcl::PointCloud<PointT>::Ptr& cluster, std::vector<bool>& processed, KdTree<PointT>* tree, float distanceTolerance)  // & cluster (works), & tree (doesn't)
+void euclideanClusteringHelper(int index, const typename pcl::PointCloud<PointT>::Ptr cloud, std::vector<int>& cluster, std::vector<bool>& processed, KdTree<PointT>* tree, float distanceTolerance)  // & cluster (works), & tree (doesn't)
 {
-	/* 
-    Helper for euclideanCluster
-    */
-
-
+    // If we have never processed this point before
+    std::cout << "\tI" << index << " : " << processed[index] << std::endl;
     processed[index] = true;
-    cluster->points.push_back(cloud->points[index]);
 
-    // Segfault: 11
-    std::vector<int> nearby = tree->search(index, distanceTolerance);  //// prev: typename pcl::PointCloud<PointT> nearby = tree->search(cloud->points[index], distanceTolerance);
-    //// std::vector<int> nearby;
+    cluster.push_back(index);
+    std::vector<int> nearby = tree->search(index, distanceTolerance);
 
-    int position = 0;
-    while (position < nearby.size())
-    {
-        if (!processed[position])
-            proximity(index, cloud, cluster, processed, tree, distanceTolerance);
-        position++;
+    int unprocessed_points = 0;
+    for (int id : nearby) {
+        if (processed[id] != true) {
+            unprocessed_points += 1; 
+        }
+    }  
+    std::cout << "\t\t" << unprocessed_points << "/" << nearby.size() << " : " << " left to process." << std::endl;
+
+    for (int id : nearby) {
+        if (processed[id] != true) {
+            euclideanClusteringHelper(id, cloud, cluster, processed, tree, distanceTolerance);
+        }
     }
+
 }
 
 template<typename PointT>
@@ -293,17 +295,22 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename 
 	int i = 0;
 	while (i < cloud->points.size())
 	{
-		if (processed[i])
+		if (processed[i] == false)
 		{
-			i++;
-			continue;
+            // If the point has not been processed, create a new cluster
+            std::vector<int> newIdCluster;
+            std::cout << "\nCreating a new cluster - Index " << i << std::endl;
+            euclideanClusteringHelper(i, cloud, newIdCluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
+
+            typename pcl::PointCloud<PointT>::Ptr newPointCluster(new typename pcl::PointCloud<PointT>());
+            std::cout << "\nCreating Cluster\n" << std::endl;
+            for (int id : newIdCluster)
+            {
+                std::cout << "\tAdding " << "(" << cloud->points[id].x << ", " << cloud->points[id].y << ", " << cloud->points[id].z << ")" << std::endl;
+                newPointCluster->points.push_back((cloud->points[id]));
+            }
+            clusters.push_back(newPointCluster);  // Assertion failed: (px != 0), function operator->, file /usr/local/include/boost/smart_ptr/shared_ptr.hpp, line 734. // Abort trap: 6
 		}
-
-        typename pcl::PointCloud<PointT>::Ptr newCluster(new typename pcl::PointCloud<PointT>);
-		std::cout << "Populating new cluster" << std::endl;
-        proximity(i, cloud, newCluster, processed, tree, distanceTol);  // i: point id, cluster passed by reference
-		clusters.push_back(newCluster);  // Assertion failed: (px != 0), function operator->, file /usr/local/include/boost/smart_ptr/shared_ptr.hpp, line 734. // Abort trap: 6
-
 		i++;
 	}
 
@@ -319,16 +326,16 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
     KdTree<PointT>* tree3D = new KdTree<PointT>(cloud);  // on stack: KdTree<PointT> tree3D;  // TOCHECK: difference between () and no ()
 
     for (int i = 0; i < cloud->points.size(); i++) 
-    	tree3D->insertPointIndex(i);  // tree3D->insertPoint(cloud->points[i], i);
-    std::cout << "Finished building k-d tree" << std::endl;
+    	tree3D->insertPointIndex(i);
+    std::cout << "\nKD Tree Built - Size : " << cloud->points.size() << "\n" << std::endl;
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // TONOTE: here clusters don't contain indeces but points
-    clusters = euclideanClustering(cloud, tree3D, 3.0);
-	std::cout << "clusters.size(): " << clusters.size() << std::endl;
+    clusters = euclideanClustering(cloud, tree3D, distanceTolerance);
+	std::cout << "\nClusters Found : " << clusters.size() << "\n" << std::endl;
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    std::cout << "Clustering took " << elapsedTime.count() << " milliseconds and found " << clusters.size() << " clusters" << std::endl;
+    std::cout << "\nClustering took " << elapsedTime.count() << " milliseconds." << std::endl;
 
     return clusters;
 }
