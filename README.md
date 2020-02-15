@@ -56,3 +56,6 @@ NOTE: very old version
 [PCL Source Github](https://github.com/PointCloudLibrary/pcl)
 
 [PCL Mac Compilation Docs](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_macosx.php)
+
+
+Some of these functions were developed by Udacity as part of their Sensor Fusion Engineer Nanodegree.
