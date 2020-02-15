@@ -149,8 +149,8 @@ void objectDetectionXYZ(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessP
 
     for (pcl::PointCloud<pcl::PointXYZ>::Ptr cluster : obstacleClusters)
     {
-        std::cout << "Cluster size: " << std::endl;
-        pointCloudXYZProcessor.numPoints(cluster);
+        // std::cout << "Cluster size: " << std::endl;
+        // pointCloudXYZProcessor.numPoints(cluster);
 
         renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
     
@@ -191,8 +191,8 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : obstacleClusters)
     {
-        std::cout << "Cluster size: " << std::endl;
-        pointCloudXYZIProcessor.numPoints(cluster);
+        // std::cout << "Cluster size: " << std::endl;
+        // pointCloudXYZIProcessor.numPoints(cluster);
 
         // Rendering cluster
         renderPointCloud(viewer, cluster, "obstacleCloud" + std::to_string(clusterId), colours[clusterId % colours.size()]);
@@ -245,8 +245,7 @@ int main(int argc, char** argv)
     */
 
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
-    // "/home/maggieliuzzi/Documents/Repos/lidar_object_detection/src/sensors/data/pcd/data_1"
-    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/media/maggieliuzzi/2TB_EXTERNAL/FormatConversions/Development/Data/Datasets/Bins/SteveJumping/PCDs/Aggregation/record-2019-07-23_10-12-00");  // TODO: change to relative path
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("../src/sensors/data/pcd/data_1");
     
     auto streamIterator = stream.begin();  // make iterator start from the beginning  // Using an iterator to go through the stream vector
 
