@@ -76,6 +76,8 @@
         "variant": "cpp",
         "vector": "cpp",
         "geometry": "cpp",
-        "__functional_03": "cpp"
+        "__functional_03": "cpp",
+        "core": "cpp",
+        "numericaldiff": "cpp"
     }
 }
