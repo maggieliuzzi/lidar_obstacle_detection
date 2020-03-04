@@ -2,6 +2,7 @@
 #define BOX_H
 #include <Eigen/Geometry> 
 
+
 struct BoxQ
 {
 	Eigen::Vector3f bboxTransform;
@@ -10,6 +11,7 @@ struct BoxQ
     float cube_width;
     float cube_height;
 };
+
 
 struct Box
 {
@@ -20,4 +22,5 @@ struct Box
 	float y_max;
 	float z_max;
 };
+
 #endif

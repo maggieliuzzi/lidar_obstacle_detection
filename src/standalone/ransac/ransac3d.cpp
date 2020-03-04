@@ -1,11 +1,11 @@
 /* \author Aaron Brown */
 // Quiz on implementing simple RANSAC line fitting
 
-#include "../../render/render.h"
 #include <unordered_set>
+#include "../../render/render.h"
 #include "../../processPointClouds.h"
-// using templates for processPointClouds so also include .cpp to help linker
-#include "../../processPointClouds.cpp"
+#include "../../processPointClouds.cpp"  // using templates for processPointClouds including .cpp to help linker
+
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData()
 {
@@ -41,8 +41,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData()
   	cloud->height = 1;
 
   	return cloud;
-
 }
+
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData3D()
 {
@@ -64,7 +64,6 @@ pcl::visualization::PCLVisualizer::Ptr initScene()
 std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int maxIterations, float distanceTol)
 {
 	std::cout << "total cloud->points.size(): " << cloud->points.size() << std::endl;  // 20
-
 	std::unordered_set<int> inliersResult;  // starts as 0
 	srand(time(NULL));
 	
@@ -149,10 +148,10 @@ std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int 
 	return inliersResult;
 }
 
-int main ()
+
+int main()
 {
-	// TODO
-	// When implementing RANSAC, try timing how long it takes to execute and compare its time to PCL's built in RANSAC functions.
+	// TODO: when implementing RANSAC, try timing how long it takes to execute and compare its time to PCL's built in RANSAC functions.
 
 	// Create viewer
 	pcl::visualization::PCLVisualizer::Ptr viewer = initScene();
@@ -168,7 +167,7 @@ int main ()
 	pcl::PointCloud<pcl::PointXYZ>::Ptr  cloudInliers(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloudOutliers(new pcl::PointCloud<pcl::PointXYZ>());
 
-	for(int index = 0; index < cloud->points.size(); index++)
+	for (int index = 0; index < cloud->points.size(); index++)
 	{
 		pcl::PointXYZ point = cloud->points[index];
 		if(inliers.count(index))

@@ -1,5 +1,5 @@
-#include "../../render/render.h"
 #include <iostream>
+#include "../../render/render.h"
 
 
 template <typename PointT>
@@ -24,6 +24,7 @@ struct PointTKdTree
 	PointTKdTree()
 	: root(NULL)
 	{}
+	
 
     void insertHelperPoint(NodePoint<PointT>** node, uint depth, PointT point, int id)  // double pointer (NodePoint**) because root was defined as NodePoint* (node pointer) originally, and then we pass the memory address
 	{
@@ -69,10 +70,12 @@ struct PointTKdTree
 		}
 	}
 
+
     void insertPoint(PointT point, int id)
 	{
 		insertHelperPoint(&root, 0, point, id);  // passing the address of root
 	}
+
 
 	void search3DHelper(PointT target, NodePoint<PointT>* node, uint depth, float distanceTol, typename pcl::PointCloud<PointT>& nearbyPoints)
 	{
@@ -134,6 +137,7 @@ struct PointTKdTree
 			}
 		}
 	}
+
 
 	typename pcl::PointCloud<PointT> search(PointT target, float distanceTol)
 	{

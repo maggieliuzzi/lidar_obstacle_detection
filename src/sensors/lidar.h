@@ -1,8 +1,9 @@
 #ifndef LIDAR_H
 #define LIDAR_H
-#include "../render/render.h"
 #include <ctime>
 #include <chrono>
+#include "../render/render.h"
+
 
 const double PI = 3.1415;
 
@@ -62,6 +63,7 @@ struct Ray
 		}	
 	}
 };
+
 
 struct Lidar
 {

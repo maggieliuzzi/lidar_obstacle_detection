@@ -1,10 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
-#include <pcl/visualization/pcl_visualizer.h>
-#include "box.h"
 #include <iostream>
 #include <vector>
 #include <string>
+#include <pcl/visualization/pcl_visualizer.h>
+#include "box.h"
+
 
 struct Color
 {
@@ -14,6 +15,7 @@ struct Color
 		: r(setR), g(setG), b(setB)
 	{}
 };
+
 
 struct Vect3
 {
@@ -30,10 +32,12 @@ struct Vect3
 	}
 };
 
+
 enum CameraAngle
 {
 	XY, TopDown, Side, FPS
 };
+
 
 struct Car
 {
@@ -59,11 +63,13 @@ struct Car
     	viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0, name+"Top");
 	}
 
+
 	bool inbetween(double point, double center, double range)
 	{
 		/* checkCollision helper function */
 		return (center-range <= point) && (center+range >= point);
 	}
+
 
 	bool checkCollision(Vect3 point)
 	{
@@ -71,6 +77,7 @@ struct Car
 			   (inbetween(point.x,position.x,dimensions.x/4)&&inbetween(point.y,position.y,dimensions.y/2)&&inbetween(point.z,position.z+dimensions.z*5/6,dimensions.z/6));
 	}
 };
+
 
 void renderHighway(pcl::visualization::PCLVisualizer::Ptr& viewer);
 void renderRays(pcl::visualization::PCLVisualizer::Ptr& viewer, const Vect3& origin, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);

@@ -1,7 +1,8 @@
-#include "../../render/render.h"
 #include <unordered_set>
+#include "../../render/render.h"
 #include "../../processPointClouds.h"
 #include "../../processPointClouds.cpp"  // using templates for processPointClouds, so including .cpp to help linker
+
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData2D()
 {
@@ -40,6 +41,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData2D()
 
   	return cloud;
 }
+
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData3D()
 {
@@ -106,7 +108,5 @@ int main()
   	}
 	
   	while (!viewer->wasStopped())
-  	{
-  	  viewer->spinOnce ();
-  	}
+  		viewer->spinOnce();
 }

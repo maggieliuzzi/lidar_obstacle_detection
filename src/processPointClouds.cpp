@@ -1,5 +1,6 @@
-#include "processPointClouds.h"
 #include <unordered_set>
+#include "processPointClouds.h"
+
 
 // Constructor
 template<typename PointT>
@@ -81,7 +82,6 @@ template<typename PointT>
 std::unordered_set<int> Ransac2D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol)
 {
 	std::cout << "Total cloud->points.size(): " << cloud->points.size() << std::endl;
-
 	std::unordered_set<int> inliersResult;  // starts as 0
 	srand(time(NULL));
 	
@@ -140,6 +140,7 @@ std::unordered_set<int> Ransac2D(typename pcl::PointCloud<PointT>::Ptr cloud, in
 
 	return inliersResult;
 }
+
 
 template<typename PointT>
 std::unordered_set<int> Ransac3D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol)
@@ -391,8 +392,8 @@ void euclideanClusteringHelper(int index, const typename pcl::PointCloud<PointT>
             euclideanClusteringHelper(id, cloud, cluster, processed, tree, distanceTolerance);
         }
     }
-
 }
+
 
 template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename pcl::PointCloud<PointT>::Ptr cloud, KdTree<PointT>* tree, float distanceTol)  // TODO: should tree be passed by reference
@@ -432,10 +433,8 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
     auto startTime = std::chrono::steady_clock::now();
     std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;  // vector of point clouds
 
-    if (usePCLClustering == true)
+    if (usePCLClustering == true)  // use built-in PCL euclidean-clustering functions
     {
-        // Uses built-in PCL euclidean-clustering functions
-
         typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);  // KdTree object for optimised search during extraction
         tree->setInputCloud(cloud);
 
@@ -513,11 +512,8 @@ template<typename PointT>
 typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::loadPcd(std::string file)
 {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
-
     if (pcl::io::loadPCDFile<PointT> (file, *cloud) == -1)
-    {
         PCL_ERROR("Couldn't read file \n");
-    }
     std::cerr << "Loaded " << cloud->points.size () << " data points from " + file << std::endl;
 
     return cloud;

@@ -1,5 +1,5 @@
-#include "../../render/render.h"
 #include <iostream>
+#include "../../render/render.h"
 
 
 struct Node  // node of k-d tree
@@ -14,6 +14,7 @@ struct Node  // node of k-d tree
 	{}
 };
 
+
 struct PointVectorKdTree
 {
 	Node* root;
@@ -21,6 +22,7 @@ struct PointVectorKdTree
 	PointVectorKdTree()
 	: root(NULL)
 	{}
+
 
 	void insertHelper(Node** node, uint depth, std::vector<float> point, int id)  // double pointer (Node**), because root was defined as Node* (node pointer) originally, and then we pass the memory address
 	{
@@ -41,6 +43,7 @@ struct PointVectorKdTree
 		}
 	}
 
+
 	void insert(std::vector<float> point, int id)
 	{
 		/* Inserts a new point into the k-d tree 
@@ -49,6 +52,7 @@ struct PointVectorKdTree
 
 		insertHelper(&root, 0, point, id);  // passing the address of the root
 	}
+
 
 	void search2DHelper(std::vector<float> target, Node* node, uint depth, float distanceTol, std::vector<int>& ids)
 	{
@@ -88,6 +92,7 @@ struct PointVectorKdTree
 		}
 	}
 
+
 	void search3DHelper(std::vector<float> target, Node* node, uint depth, float distanceTol, std::vector<int>& ids)
 	{
 		std::cout << "\nDepth: " << depth << std::endl;
@@ -125,6 +130,7 @@ struct PointVectorKdTree
 				search3DHelper(target, node->right, depth + 1, distanceTol, ids);
 		}
 	}
+
 
 	std::vector<int> search(std::vector<float> target, float distanceTol)
 	{

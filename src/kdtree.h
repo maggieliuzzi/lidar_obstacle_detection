@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 
+
 struct Node
 {
 	int id;
@@ -23,6 +24,7 @@ struct KdTree
 	KdTree(typename pcl::PointCloud<PointT>::Ptr pointcloud)
 	: root(NULL), cloud(pointcloud)
 	{}
+
 
     void insertHelper(Node** node, unsigned int depth, int id)  // double pointer (Node**) because root was defined as Node* (node pointer) originally, and then we pass the memory address
 	{
@@ -62,10 +64,12 @@ struct KdTree
 		}
     }
     
+
     void insertPointIndex(int id)
 	{
 		insertHelper(&root, 0, id);  // passing the address of root
 	}
+
 
     void searchHelper(int id, Node** node, unsigned int depth, float distanceTol, std::vector<int>& nearbyPointIds)
 	{
@@ -133,6 +137,7 @@ struct KdTree
 			}
 		}
     }
+
 
     std::vector<int> search(int id, float distanceTol)
 	{

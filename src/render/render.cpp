@@ -1,5 +1,6 @@
 #include "render.h"
 
+
 void renderHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
 	double roadLength = 50.0;  // meters
@@ -14,6 +15,7 @@ void renderHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 	viewer->addLine(pcl::PointXYZ(-roadLength/2, roadWidth/6, 0.01), pcl::PointXYZ(roadLength/2, roadWidth/6, 0.01), 1, 1, 0, "line2");
 }
 
+
 int countRays = 0;
 void renderRays(pcl::visualization::PCLVisualizer::Ptr& viewer, const Vect3& origin, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
 {
@@ -24,6 +26,7 @@ void renderRays(pcl::visualization::PCLVisualizer::Ptr& viewer, const Vect3& ori
 	}
 }
 
+
 void clearRays(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
 	while(countRays)
@@ -33,12 +36,14 @@ void clearRays(pcl::visualization::PCLVisualizer::Ptr& viewer)
 	}
 }
 
+
 void renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::string name, Color color)
 {
   	viewer->addPointCloud<pcl::PointXYZ>(cloud, name);
   	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
   	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, color.r, color.g, color.b, name);
 }
+
 
 void renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, std::string name, Color color)
 {
@@ -57,6 +62,7 @@ void renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl:
 
 	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, name);
 }
+
 
 void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, Box box, int id, Color color, float opacity)
 {
@@ -81,6 +87,7 @@ void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, Box box, int id, 
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, color.r, color.g, color.b, cubeFill);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity*0.3, cubeFill);
 }
+
 
 void renderBox(pcl::visualization::PCLVisualizer::Ptr& viewer, BoxQ box, int id, Color color, float opacity)
 {

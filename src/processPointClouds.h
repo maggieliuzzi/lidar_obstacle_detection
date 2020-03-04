@@ -1,6 +1,12 @@
 #ifndef PROCESSPOINTCLOUDS_H_
 #define PROCESSPOINTCLOUDS_H_
 
+#include <unordered_set>
+#include <iostream> 
+#include <string>  
+#include <vector>
+#include <ctime>
+#include <chrono>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/extract_indices.h>
@@ -10,17 +16,13 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/common/transforms.h>
-#include <unordered_set>
-#include <iostream> 
-#include <string>  
-#include <vector>
-#include <ctime>
-#include <chrono>
 #include "render/box.h"
 #include "kdtree.h"
 
+
 template<typename PointT>
 class ProcessPointClouds {
+    
 public:
 
     ProcessPointClouds();  // Constructor
@@ -49,4 +51,5 @@ public:
 
     std::vector<boost::filesystem::path> streamPcd(std::string dataPath);
 };
+
 #endif /* PROCESSPOINTCLOUDS_H_ */

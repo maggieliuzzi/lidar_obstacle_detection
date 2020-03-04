@@ -1,6 +1,6 @@
-#include "../../render/box.h"
 #include <chrono>
 #include <string>
+#include "../../render/box.h"
 #include "PointVectorKdTree.h"
 #include "PointTKdTree.h"
 
@@ -25,6 +25,7 @@ pcl::visualization::PCLVisualizer::Ptr initScene(Box window, int zoom)
 	return viewer;
 }
 
+
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData(std::vector<std::vector<float>> points)
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
@@ -43,6 +44,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData(std::vector<std::vector<float>> p
 
   	return cloud;
 }
+
 
 void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Box window, int& iteration, uint depth=0)
 {
@@ -70,7 +72,8 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 	}
 }
 
-// TOCHECK: if still relevant: TODO: fix
+
+// TOCHECK: if still needs fixing
 void render3DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Box window, int& iteration, uint depth=0)
 {
 	if (node != NULL)
@@ -103,6 +106,7 @@ void render3DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 	}
 }
 
+
 void proximity(int index, const std::vector<std::vector<float>> points, std::vector<int>& cluster, std::vector<bool>& processed, PointVectorKdTree* tree, float distanceTolerance)
 {
 	/* euclideanClustering helper */
@@ -121,6 +125,7 @@ void proximity(int index, const std::vector<std::vector<float>> points, std::vec
 		}
 	}
 }
+
 
 std::vector<std::vector<int>> euclideanClustering(const std::vector<std::vector<float>> points, PointVectorKdTree* tree, float distanceTol)
 {
@@ -149,7 +154,6 @@ std::vector<std::vector<int>> euclideanClustering(const std::vector<std::vector<
 int main()
 {
 	// Creating viewer
-
 	Box window;
   	window.x_min = -10;
   	window.x_max =  10;
@@ -160,20 +164,17 @@ int main()
 	pcl::visualization::PCLVisualizer::Ptr viewer = initScene(window, 25);
 
 	// Creating data
-
 	// std::vector<std::vector<float>> points = { {-6.2,7}, {-6.3,8.4}, {-5.2,7.1}, {-5.7,6.3}, {7.2,6.1}, {8.0,5.3}, {7.2,7.1}, {0.2,-7.1}, {1.7,-6.9}, {-1.2,-7.2}, {2.2,-8.9} };  // 2D
 	std::vector<std::vector<float>> points = { {-6.2,7,3}, {-6.3,8.4,7}, {-5.2,7.1,6}, {-5.7,6.3,3}, {7.2,6.1,7}, {8.0,5.3,1}, {7.2,7.1,6}, {0.2,-7.1,2}, {1.7,-6.9,8}, {-1.2,-7.2,3}, {2.2,-8.9,2} };  // 3D
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData(points);
 
 	// Creating and populating k-d tree
-
 	PointVectorKdTree* tree = new PointVectorKdTree;
   
     for (int i = 0; i < points.size(); i++) 
     	tree->insert(points[i], i); 
 
 	// Visualising k-d tree
-
 	int it = 0;
   	// render2DTree(tree->root, viewer, window, it);  // 2D
 	render3DTree(tree->root, viewer, window, it);  // 3D
@@ -195,7 +196,6 @@ int main()
 	*/
 
   	// Segmentating points
-
   	auto startTime = std::chrono::steady_clock::now();
 
   	std::vector<std::vector<int>> clusters = euclideanClustering(points, tree, 3.0);
@@ -206,7 +206,6 @@ int main()
   	std::cout << "Clustering found " << clusters.size() << " cluster(s) and took " << elapsedTime.count() << " milliseconds" << std::endl;
 
   	// Rendering clusters in viewer
-
   	int clusterId = 0;
 	std::vector<Color> colors = {Color(1,0,0), Color(0,1,0), Color(0,0,1)};
   	for (std::vector<int> cluster : clusters)
@@ -229,7 +228,5 @@ int main()
 	}
 
   	while (!viewer->wasStopped ())
-  	{
-  	  viewer->spinOnce();
-  	}
+  		viewer->spinOnce();
 }
