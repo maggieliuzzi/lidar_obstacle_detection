@@ -171,7 +171,8 @@ void objectDetectionXYZI(pcl::visualization::PCLVisualizer::Ptr& viewer, Process
 
     // Downsampling and filtering
     
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.2, Eigen::Vector4f(-15, -10, -3, 1), Eigen::Vector4f(80, 8, 0, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    // pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.2, Eigen::Vector4f(-15, -10, -3, 1), Eigen::Vector4f(80, 8, 0, 1));  // TODO: try 1.5, 0.3, 0.5 | -10, -5, -2, 1, 30, 8, 1, 1
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud = pointCloudXYZIProcessor.FilterCloud(inputCloud, 0.5, Eigen::Vector4f(-30, -30, -5, 1), Eigen::Vector4f(30, 30, 5, 1));
     // renderPointCloud(viewer, filteredCloud, "filteredCloud");
 
     // Segmenting ground and obstacles
@@ -245,7 +246,7 @@ int main(int argc, char** argv)
     */
 
     // Passing path to directory containing sequentially-ordered PCD files. Returns a chronologically0ordered vector of all those file names
-    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("../src/sensors/data/pcd/data_1");
+    std::vector<boost::filesystem::path> stream = pointCloudXYZIProcessor.streamPcd("/media/maggieliuzzi/2TB_EXTERNAL/BinsBags/BinsBags/Bins/Goku6/PCDs/record-2019-11-05_13-25-46");  // /media/maggieliuzzi/2TB_EXTERNAL/BinsBags/BinsBags/Bins/Goku6/PCDs/record-2019-11-05_13-25-46  // ../src/sensors/data/pcd/data_1
     
     auto streamIterator = stream.begin();  // make iterator start from the beginning  // Using an iterator to go through the stream vector
 
